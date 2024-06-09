@@ -1,0 +1,23 @@
+#!/bin/bash
+
+taskId=''
+
+print_usage() {
+  print "Usage: -t  (required: ECS task id. Not arn. For example: 941f8694308b4adea44cb07ff9e50c30)"
+}
+
+while getopts t: flag
+do
+    case "${flag}" in
+        t) taskId="${OPTARG}" ;;
+    esac
+done
+
+if [ $# -eq 0 ]; then
+    print_usage
+    exit 1
+fi
+
+echo "Input: ${taskId}"
+
+aws ecs execute-command --region ap-northeast-1 --cluster aliveland-live-stg-backend-cluster --task "${taskId}" --container backend --interactive --command "/bin/bash"
