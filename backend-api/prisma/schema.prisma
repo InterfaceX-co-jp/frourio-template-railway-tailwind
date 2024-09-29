@@ -17,6 +17,10 @@ generator fabbrica {
     noTranspile = true
 }
 
+generator example {
+    provider = "tsx prisma/generators/index.ts"
+}
+
 model User {
     id    Int     @id @default(autoincrement())
     email String  @unique
