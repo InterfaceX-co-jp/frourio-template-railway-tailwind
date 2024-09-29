@@ -2,7 +2,7 @@
 
 ```bash
 # At root dir
-cd nftfun-monorepo
+cd frourio-template-railway-tailwind
 ```
 
 Setup .env
@@ -37,6 +37,6 @@ npm run dev
 - [SSH connection to ECS Fargate using SSM (Qiita)](https://qiita.com/kouji0705/items/005ea6d7c21ddd24ebb3)
 
 ```bash
-$ cd nftfun-monorepo
+$ cd frourio-template-railway-tailwind
 $ sh . /scripts/ecs_exec_stg -t ((task-id)) # Example) . /scripts/ecs_exec_stg -t 941f8694308b4adea44cb07ff9e50c30
 ```
