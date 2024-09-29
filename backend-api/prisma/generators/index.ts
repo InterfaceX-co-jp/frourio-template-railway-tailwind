@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import fs from 'node:fs/promises';
 import { generatorHandler } from '@prisma/generator-helper';
-import assert from 'assert';
 
 generatorHandler({
   onManifest() {
@@ -12,9 +10,6 @@ generatorHandler({
     };
   },
   async onGenerate(options) {
-    const path = options.generator.output?.value;
-    assert(path != null, 'output is required.');
-    const content = JSON.stringify(options.dmmf, null, '\t');
-    await fs.writeFile(path, content);
+    console.log(options.dmmf.datamodel);
   },
 });
