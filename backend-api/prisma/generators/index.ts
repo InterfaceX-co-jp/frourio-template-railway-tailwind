@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { generatorHandler } from '@prisma/generator-helper';
+import { generate as generateDomainModel } from './generate-domain-model';
 
 generatorHandler({
   onManifest() {
@@ -10,6 +11,6 @@ generatorHandler({
     };
   },
   async onGenerate(options) {
-    console.log(options.dmmf.datamodel);
+    generateDomainModel(options);
   },
 });
