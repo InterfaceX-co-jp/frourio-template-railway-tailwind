@@ -1,5 +1,5 @@
 {
-  "name": "nftfun-monorepo-frontend",
+  "name": "frontend-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -26,8 +26,8 @@
     "aspida": "^1.14.0",
     "axios": "^1.6.2",
     "clsx": "^2.0.0",
-    "commonConstantsWithClient": "file:../nftfun-monorepo-backend/commonConstantsWithClient",
-    "commonTypesWithClient": "file:../nftfun-monorepo-backend/commonTypesWithClient",
+    "commonConstantsWithClient": "file:../backend-api/commonConstantsWithClient",
+    "commonTypesWithClient": "file:../backend-api/commonTypesWithClient",
     "dayjs": "^1.11.10",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.9.0",

@@ -6,12 +6,12 @@ help: ## Shows help
 
 install: ## Install All Directories
 	npm i 
-	npm i --prefix nftfun-monorepo-backend 
-	npm i --prefix nftfun-monorepo-frontend
+	npm i --prefix backend-api 
+	npm i --prefix frontend-web
 
 env-setup-local: ## Setup dotenvs
-	cp nftfun-monorepo-backend/.env.example nftfun-monorepo-backend/.env	
-	cp nftfun-monorepo-frontend/.env.local.example nftfun-monorepo-frontend/.env.local
+	cp backend-api/.env.example backend-api/.env	
+	cp frontend-web/.env.local.example frontend-web/.env.local
 
 
 .DEFAULT_GOAL=help
