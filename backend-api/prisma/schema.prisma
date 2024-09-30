@@ -10,12 +10,12 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// generator fabbrica {
-//     provider    = "prisma-fabbrica"
-//     output      = "__generated__/fabbrica"
-//     tsconfig    = "../tsconfig.json"
-//     noTranspile = true
-// }
+generator fabbrica {
+    provider    = "prisma-fabbrica"
+    output      = "__generated__/fabbrica"
+    tsconfig    = "../tsconfig.json"
+    noTranspile = true
+}
 
 generator DomainModelGenerator {
     provider = "tsx ./prisma/generators/domain-model/index.ts"
