@@ -25,7 +25,11 @@ export default class Transformer {
     field: PrismaDMMF.Field;
     overrideValue?: string;
   }) {
-    return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${args.overrideValue ? args.overrideValue : this.mapPrismaValueType({ prismaType: args.field.type })}${args.field.isRequired ? '' : '| null'}`;
+    if (args.field.relationName) {
+      return '';
+    }
+
+    return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${args.overrideValue ? args.overrideValue : this.mapPrismaValueType({ field: args.field })}${args.field.isRequired ? '' : '| null'}`;
   }
 
   private generateModelDtoInterface(args: { model: PrismaDMMF.Model }) {
@@ -33,6 +37,10 @@ export default class Transformer {
         export interface ${args.model.name}ModelDto {
             ${args.model.fields
               .map((field) => {
+                if (field.relationName) {
+                  return '';
+                }
+
                 return this.renderKeyValueFieldStringFromDMMFField({
                   field,
                   overrideValue:
@@ -46,28 +54,51 @@ export default class Transformer {
 
   private generateModelGetterFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
-      .map(
-        (field) => `get ${field.name}() {
+      .map((field) => {
+        if (field.relationName) {
+          return '';
+        }
+
+        return `get ${field.name}() {
             return this._${field.name};
-        }`,
-      )
+        }`;
+      })
       .join('\n\n  ');
   }
 
   private generateModelFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
-      .map(
-        (field) =>
-          `private readonly _${this.renderKeyValueFieldStringFromDMMFField({ field })};`,
-      )
+      .map((field) => {
+        if (field.relationName) {
+          return '';
+        }
+
+        return `private readonly _${this.renderKeyValueFieldStringFromDMMFField({ field })};`;
+      })
       .join('\n  ');
   }
 
   private generateModelConstructor(args: { model: PrismaDMMF.Model }) {
     return `private constructor(args: {
-            ${args.model.fields.map((field) => this.renderKeyValueFieldStringFromDMMFField({ field })).join(';\n')}
+            ${args.model.fields
+              .map((field) => {
+                if (field.relationName) {
+                  return '';
+                }
+
+                return this.renderKeyValueFieldStringFromDMMFField({ field });
+              })
+              .join(';\n')}
         }) {
-            ${args.model.fields.map((field) => `this._${field.name} = args.${field.name};`).join('\n  ')}
+            ${args.model.fields
+              .map((field) => {
+                if (field.relationName) {
+                  return '';
+                }
+
+                return `this._${field.name} = args.${field.name};`;
+              })
+              .join('\n  ')}
         }`;
   }
 
@@ -76,7 +107,15 @@ export default class Transformer {
             self: Prisma${args.model.name}
         }) {
             return new ${args.model.name}Model({
-                ${args.model.fields.map((field) => `${field.name}: args.self.${field.name}`).join(',\n')}
+                ${args.model.fields
+                  .map((field) => {
+                    if (field.relationName) {
+                      return '';
+                    }
+
+                    return `${field.name}: args.self.${field.name}`;
+                  })
+                  .join(',\n')}
             });
         }`;
   }
@@ -90,6 +129,10 @@ export default class Transformer {
                       return `${field.name}: this._${field.name}.toISOString()`; // convert Date to string
                     }
 
+                    if (field.relationName) {
+                      return '';
+                    }
+
                     return `${field.name}: this._${field.name}`;
                   })
                   .join(',\n')}
@@ -97,7 +140,7 @@ export default class Transformer {
         }`;
   }
 
-  transform() {
+  async transform() {
     this._models.forEach(async (model) => {
       await writeFileSafely(
         `./prisma/__generated__/domain/models/${model.name}Model.ts`,
@@ -123,8 +166,8 @@ export default class Transformer {
     });
   }
 
-  private mapPrismaValueType(args: { prismaType: string }) {
-    switch (args.prismaType) {
+  private mapPrismaValueType(args: { field: PrismaDMMF.Field }) {
+    switch (args.field.type) {
       case 'String':
         return 'string';
       case 'Int':
@@ -139,8 +182,8 @@ export default class Transformer {
         return 'number';
       case 'Enum':
         return 'string';
-      case '$ModelName':
-        return 'unknown';
+      case args.field.type:
+        return `Prisma${args.field.type}`;
       default:
         return 'unknown';
     }

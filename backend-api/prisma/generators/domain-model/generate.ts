@@ -5,7 +5,9 @@ export async function generate(options: GeneratorOptions) {
   try {
     const models = options.dmmf.datamodel.models;
 
-    const t = new Transformer({ models });
+    const t = new Transformer({
+      models,
+    });
 
     t.transform();
   } catch (e) {
