@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { generatorHandler } from '@prisma/generator-helper';
-import { generate as generateDomainModel } from './generate-domain-model';
+import { generate as generateDomainModel } from './domain-model/generate';
 
 generatorHandler({
   onManifest() {
