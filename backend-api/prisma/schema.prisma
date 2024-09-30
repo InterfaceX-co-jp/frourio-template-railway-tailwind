@@ -10,19 +10,36 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-generator fabbrica {
-    provider    = "prisma-fabbrica"
-    output      = "__generated__/fabbrica"
-    tsconfig    = "../tsconfig.json"
-    noTranspile = true
-}
+// generator fabbrica {
+//     provider    = "prisma-fabbrica"
+//     output      = "__generated__/fabbrica"
+//     tsconfig    = "../tsconfig.json"
+//     noTranspile = true
+// }
 
-generator example {
-    provider = "tsx prisma/generators/index.ts"
+generator DomainModelGenerator {
+    provider = "tsx ./prisma/generators/domain-model/index.ts"
 }
 
 model User {
     id    Int     @id @default(autoincrement())
     email String  @unique
     name  String?
+
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    UserProfile UserProfile[]
+}
+
+model UserProfile {
+    id     Int  @id @default(autoincrement())
+    userId Int
+    user   User @relation(fields: [userId], references: [id])
+
+    bio      String?
+    image    String?
+    username String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

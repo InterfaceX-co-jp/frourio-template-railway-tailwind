@@ -4,7 +4,7 @@ import type {
 } from '@prisma/generator-helper';
 import { writeFileSafely } from '../utils/writeFileSafely';
 import path from 'path';
-import removeDir from '../utils/removeDir';
+// import removeDir from '../utils/removeDir';
 
 export default class Transformer {
   private readonly _models: ReadonlyDeep<PrismaDMMF.Model[]> = [];
@@ -151,7 +151,7 @@ export default class Transformer {
   }
 
   async transform() {
-    await removeDir(path.join(Transformer.outputPath, 'domain/models'), true);
+    // await removeDir(path.join(Transformer.outputPath, 'domain/models'), true);
 
     await Promise.all(
       this._models.map((model) =>
