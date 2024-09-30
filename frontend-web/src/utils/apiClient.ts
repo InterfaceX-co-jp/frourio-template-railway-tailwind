@@ -1,6 +1,6 @@
 import aspida from '@aspida/axios'
 import axios from 'axios'
-import api from '../../../nftfun-monorepo-backend/api/$api'
+import api from '../../../backend-api/api/$api'
 import { adminAuthStateInSessionStorage, userAuthStateInSessionStorage } from './sessionStorage'
 
 const defaultWithoutAuthAxiosInstance = axios.create()
