@@ -5,12 +5,10 @@ import { generate as generateDomainModel } from './domain-model/generate';
 generatorHandler({
   onManifest() {
     return {
-      defaultOutput: 'dmmf.json',
-      prettyName: 'DMMF JSON',
-      version: '1.2.3',
+      defaultOutput: '__generated__/domain/models',
+      prettyName: 'Base Domain Models',
+      version: '1.0.0',
     };
   },
-  async onGenerate(options) {
-    generateDomainModel(options);
-  },
+  onGenerate: generateDomainModel,
 });

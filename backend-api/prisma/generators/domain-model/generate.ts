@@ -9,9 +9,8 @@ export async function generate(options: GeneratorOptions) {
       models,
     });
 
-    t.transform();
+    await t.transform();
   } catch (e) {
     console.error(e);
-    process.exit(1);
   }
 }

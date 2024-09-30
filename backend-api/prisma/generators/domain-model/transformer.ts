@@ -14,7 +14,18 @@ export default class Transformer {
   private generatePrismaModelImportStatement(args: {
     model: PrismaDMMF.Model;
   }) {
-    return `import { ${args.model.name} as Prisma${args.model.name} } from '@prisma/client';`;
+    const imports = args.model.fields.map((field) => {
+      if (field.relationName) {
+        return `${field.type} as Prisma${field.type}`;
+      }
+
+      return '';
+    });
+
+    return `import { 
+              ${args.model.name} as Prisma${args.model.name}, 
+              ${imports.filter((i) => i).join(', ')}
+            } from '@prisma/client';`;
   }
 
   /**
@@ -26,7 +37,11 @@ export default class Transformer {
     overrideValue?: string;
   }) {
     if (args.field.relationName) {
-      return '';
+      if (args.field.isList) {
+        return `${args.field.name}${args.field.isRequired ? '' : '?'}: Prisma${args.field.type}[]`;
+      }
+
+      return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${args.overrideValue ? args.overrideValue : this.mapPrismaValueType({ field: args.field })}${args.field.isRequired ? '' : '| null'}`;
     }
 
     return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${args.overrideValue ? args.overrideValue : this.mapPrismaValueType({ field: args.field })}${args.field.isRequired ? '' : '| null'}`;
@@ -38,7 +53,10 @@ export default class Transformer {
             ${args.model.fields
               .map((field) => {
                 if (field.relationName) {
-                  return '';
+                  return this.renderKeyValueFieldStringFromDMMFField({
+                    field,
+                    overrideValue: 'Prisma' + field.type,
+                  });
                 }
 
                 return this.renderKeyValueFieldStringFromDMMFField({
@@ -55,10 +73,6 @@ export default class Transformer {
   private generateModelGetterFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
       .map((field) => {
-        if (field.relationName) {
-          return '';
-        }
-
         return `get ${field.name}() {
             return this._${field.name};
         }`;
@@ -69,10 +83,6 @@ export default class Transformer {
   private generateModelFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
       .map((field) => {
-        if (field.relationName) {
-          return '';
-        }
-
         return `private readonly _${this.renderKeyValueFieldStringFromDMMFField({ field })};`;
       })
       .join('\n  ');
@@ -82,20 +92,12 @@ export default class Transformer {
     return `private constructor(args: {
             ${args.model.fields
               .map((field) => {
-                if (field.relationName) {
-                  return '';
-                }
-
                 return this.renderKeyValueFieldStringFromDMMFField({ field });
               })
               .join(';\n')}
         }) {
             ${args.model.fields
               .map((field) => {
-                if (field.relationName) {
-                  return '';
-                }
-
                 return `this._${field.name} = args.${field.name};`;
               })
               .join('\n  ')}
@@ -105,14 +107,19 @@ export default class Transformer {
   private generateStaticFromPrismaValue(args: { model: PrismaDMMF.Model }) {
     return `static fromPrismaValue(args: {
             self: Prisma${args.model.name}
+            ${args.model.fields
+              .map((field) => {
+                if (field.relationName) {
+                  return `${field.relationName}: Prisma${field.type}${field.isList ? '[]' : ''}`;
+                }
+
+                return '';
+              })
+              .join(';\n')}
         }) {
             return new ${args.model.name}Model({
                 ${args.model.fields
                   .map((field) => {
-                    if (field.relationName) {
-                      return '';
-                    }
-
                     return `${field.name}: args.self.${field.name}`;
                   })
                   .join(',\n')}
@@ -164,6 +171,8 @@ export default class Transformer {
         `,
       );
     });
+
+    // await writeIndexFile('./prisma/__generated__/domain/models');
   }
 
   private mapPrismaValueType(args: { field: PrismaDMMF.Field }) {
