@@ -1,28 +1,39 @@
-import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
+import type {
+  DMMF as PrismaDMMF,
+  ReadonlyDeep,
+} from '@prisma/generator-helper';
 import { writeFileSafely } from '../utils/writeFileSafely';
 
 export default class Transformer {
-  private readonly _models: PrismaDMMF.Model[];
+  private readonly _models: ReadonlyDeep<PrismaDMMF.Model[]> = [];
 
-  private readonly _importStatements: string[] = [];
-
-  constructor(args: { models: PrismaDMMF.Model[] }) {
+  constructor(args: { models: ReadonlyDeep<PrismaDMMF.Model[]> }) {
     this._models = args.models;
   }
 
-  generatePrismaModelImportStatement(args: { model: PrismaDMMF.Model }) {
+  private generatePrismaModelImportStatement(args: {
+    model: PrismaDMMF.Model;
+  }) {
     return `import { ${args.model.name} as Prisma${args.model.name} } from '@prisma/client';`;
   }
 
-  generateModelDtoInterface(args: { model: PrismaDMMF.Model }) {
+  /**
+   * renders a key-value paired field string
+   * (e.x.) `name?: string | null`
+   */
+  private renderKeyValueFieldString(args: { field: PrismaDMMF.Field }) {
+    return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${this.mapPrismaValueType({ prismaType: args.field.type })}${args.field.isRequired ? '' : '| null'}`;
+  }
+
+  private generateModelDtoInterface(args: { model: PrismaDMMF.Model }) {
     return `
         export interface ${args.model.name}ModelDto {
-            ${args.model.fields.map((field) => `${field.name}${field.isRequired ? '' : '?'}: ${this.mapPrismaValueType({ prismaType: field.type })} ${field.isRequired ? '' : '| null'}`).join('\n  ')}
+            ${args.model.fields.map((field) => this.renderKeyValueFieldString({ field })).join('\n  ')}
         }
     `;
   }
 
-  generateModelGetterFields(args: { model: PrismaDMMF.Model }) {
+  private generateModelGetterFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
       .map(
         (field) => `get ${field.name}() {
@@ -32,24 +43,24 @@ export default class Transformer {
       .join('\n\n  ');
   }
 
-  generateModelFields(args: { model: PrismaDMMF.Model }) {
+  private generateModelFields(args: { model: PrismaDMMF.Model }) {
     return args.model.fields
       .map(
         (field) =>
-          `private readonly _${field.name}${field.isRequired ? '' : '?'}: ${this.mapPrismaValueType({ prismaType: field.type })}${field.isRequired ? '' : '| null'};`,
+          `private readonly _${this.renderKeyValueFieldString({ field })};`,
       )
       .join('\n  ');
   }
 
-  generateModelConstructor(args: { model: PrismaDMMF.Model }) {
+  private generateModelConstructor(args: { model: PrismaDMMF.Model }) {
     return `private constructor(args: {
-            ${args.model.fields.map((field) => `${field.name}${field.isRequired ? '' : '?'}: ${this.mapPrismaValueType({ prismaType: field.type })}${field.isRequired ? '' : '| null'}`).join(';\n')}
+            ${args.model.fields.map((field) => this.renderKeyValueFieldString({ field })).join(';\n')}
         }) {
             ${args.model.fields.map((field) => `this._${field.name} = args.${field.name};`).join('\n  ')}
         }`;
   }
 
-  generateStaticFromPrismaValue(args: { model: PrismaDMMF.Model }) {
+  private generateStaticFromPrismaValue(args: { model: PrismaDMMF.Model }) {
     return `static fromPrismaValue(args: {
             self: Prisma${args.model.name}
         }) {
