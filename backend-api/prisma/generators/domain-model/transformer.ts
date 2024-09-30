@@ -3,9 +3,12 @@ import type {
   ReadonlyDeep,
 } from '@prisma/generator-helper';
 import { writeFileSafely } from '../utils/writeFileSafely';
+import path from 'path';
+import removeDir from '../utils/removeDir';
 
 export default class Transformer {
   private readonly _models: ReadonlyDeep<PrismaDMMF.Model[]> = [];
+  private static outputPath: string = './prisma/__generated__';
 
   constructor(args: { models: ReadonlyDeep<PrismaDMMF.Model[]> }) {
     this._models = args.models;
@@ -148,31 +151,36 @@ export default class Transformer {
   }
 
   async transform() {
-    this._models.forEach(async (model) => {
-      await writeFileSafely(
-        `./prisma/__generated__/domain/models/${model.name}Model.ts`,
-        `
-            ${this.generatePrismaModelImportStatement({ model })}
+    await removeDir(path.join(Transformer.outputPath, 'domain/models'), true);
 
-            ${this.generateModelDtoInterface({ model })}
+    await Promise.all(
+      this._models.map((model) =>
+        writeFileSafely(
+          path.join(
+            Transformer.outputPath,
+            `domain/models/${model.name}Model.ts`,
+          ),
+          `
+          ${this.generatePrismaModelImportStatement({ model })}
 
-            export class ${model.name}Model {
-                ${this.generateModelFields({ model })}
+          ${this.generateModelDtoInterface({ model })}
 
-                ${this.generateModelConstructor({ model })}
+          export class ${model.name}Model {
+              ${this.generateModelFields({ model })}
 
-                ${this.generateStaticFromPrismaValue({ model })}
+              ${this.generateModelConstructor({ model })}
 
-                ${this.generateToDtoMethod({ model })}
+              ${this.generateStaticFromPrismaValue({ model })}
 
-                // getters
-                ${this.generateModelGetterFields({ model })}
-            }
+              ${this.generateToDtoMethod({ model })}
+
+              // getters
+              ${this.generateModelGetterFields({ model })}
+          }
         `,
-      );
-    });
-
-    // await writeIndexFile('./prisma/__generated__/domain/models');
+        ),
+      ),
+    );
   }
 
   private mapPrismaValueType(args: { field: PrismaDMMF.Field }) {
