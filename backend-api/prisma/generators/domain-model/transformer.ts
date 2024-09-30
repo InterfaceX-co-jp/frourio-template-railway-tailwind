@@ -21,14 +21,25 @@ export default class Transformer {
    * renders a key-value paired field string
    * (e.x.) `name?: string | null`
    */
-  private renderKeyValueFieldString(args: { field: PrismaDMMF.Field }) {
-    return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${this.mapPrismaValueType({ prismaType: args.field.type })}${args.field.isRequired ? '' : '| null'}`;
+  private renderKeyValueFieldStringFromDMMFField(args: {
+    field: PrismaDMMF.Field;
+    overrideValue?: string;
+  }) {
+    return `${args.field.name}${args.field.isRequired ? '' : '?'}: ${args.overrideValue ? args.overrideValue : this.mapPrismaValueType({ prismaType: args.field.type })}${args.field.isRequired ? '' : '| null'}`;
   }
 
   private generateModelDtoInterface(args: { model: PrismaDMMF.Model }) {
     return `
         export interface ${args.model.name}ModelDto {
-            ${args.model.fields.map((field) => this.renderKeyValueFieldString({ field })).join('\n  ')}
+            ${args.model.fields
+              .map((field) => {
+                return this.renderKeyValueFieldStringFromDMMFField({
+                  field,
+                  overrideValue:
+                    field.type === 'DateTime' ? 'string' : undefined, // DTO needs to be string for Date
+                });
+              })
+              .join('\n  ')}
         }
     `;
   }
@@ -47,14 +58,14 @@ export default class Transformer {
     return args.model.fields
       .map(
         (field) =>
-          `private readonly _${this.renderKeyValueFieldString({ field })};`,
+          `private readonly _${this.renderKeyValueFieldStringFromDMMFField({ field })};`,
       )
       .join('\n  ');
   }
 
   private generateModelConstructor(args: { model: PrismaDMMF.Model }) {
     return `private constructor(args: {
-            ${args.model.fields.map((field) => this.renderKeyValueFieldString({ field })).join(';\n')}
+            ${args.model.fields.map((field) => this.renderKeyValueFieldStringFromDMMFField({ field })).join(';\n')}
         }) {
             ${args.model.fields.map((field) => `this._${field.name} = args.${field.name};`).join('\n  ')}
         }`;
@@ -67,6 +78,22 @@ export default class Transformer {
             return new ${args.model.name}Model({
                 ${args.model.fields.map((field) => `${field.name}: args.self.${field.name}`).join(',\n')}
             });
+        }`;
+  }
+
+  private generateToDtoMethod(args: { model: PrismaDMMF.Model }) {
+    return `toDto() {
+            return {
+                ${args.model.fields
+                  .map((field) => {
+                    if (field.type === 'DateTime') {
+                      return `${field.name}: this._${field.name}.toISOString()`; // convert Date to string
+                    }
+
+                    return `${field.name}: this._${field.name}`;
+                  })
+                  .join(',\n')}
+            };
         }`;
   }
 
@@ -85,6 +112,8 @@ export default class Transformer {
                 ${this.generateModelConstructor({ model })}
 
                 ${this.generateStaticFromPrismaValue({ model })}
+
+                ${this.generateToDtoMethod({ model })}
 
                 // getters
                 ${this.generateModelGetterFields({ model })}
