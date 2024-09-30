@@ -3,12 +3,9 @@ import type {
   ReadonlyDeep,
 } from '@prisma/generator-helper';
 import { writeFileSafely } from '../utils/writeFileSafely';
-import path from 'path';
-// import removeDir from '../utils/removeDir';
 
 export default class Transformer {
   private readonly _models: ReadonlyDeep<PrismaDMMF.Model[]> = [];
-  private static outputPath: string = './prisma/__generated__';
 
   constructor(args: { models: ReadonlyDeep<PrismaDMMF.Model[]> }) {
     this._models = args.models;
@@ -21,8 +18,6 @@ export default class Transformer {
       if (field.relationName) {
         return `${field.type} as Prisma${field.type}`;
       }
-
-      return '';
     });
 
     return `import { 
@@ -109,25 +104,26 @@ export default class Transformer {
 
   private generateStaticFromPrismaValue(args: { model: PrismaDMMF.Model }) {
     return `static fromPrismaValue(args: {
-            self: Prisma${args.model.name}
-            ${args.model.fields
-              .map((field) => {
-                if (field.relationName) {
-                  return `${field.relationName}: Prisma${field.type}${field.isList ? '[]' : ''}`;
-                }
+              self: Prisma${args.model.name},
+              ${args.model.fields
+                .filter((field) => field.relationName)
+                .map((field) => {
+                  return `${field.name}: Prisma${field.type}${field.isList ? '[]' : ''}`;
+                })
+                .join(',\n')}
+            }) {
+                return new ${args.model.name}Model({
+                    ${args.model.fields
+                      .map((field) => {
+                        if (field.relationName) {
+                          return `${field.name}: args.${field.name}`;
+                        }
 
-                return '';
-              })
-              .join(';\n')}
-        }) {
-            return new ${args.model.name}Model({
-                ${args.model.fields
-                  .map((field) => {
-                    return `${field.name}: args.self.${field.name}`;
-                  })
-                  .join(',\n')}
-            });
-        }`;
+                        return `${field.name}: args.self.${field.name}`;
+                      })
+                      .join(',\n')}
+                });
+            }`;
   }
 
   private generateToDtoMethod(args: { model: PrismaDMMF.Model }) {
@@ -139,10 +135,6 @@ export default class Transformer {
                       return `${field.name}: this._${field.name}.toISOString()`; // convert Date to string
                     }
 
-                    if (field.relationName) {
-                      return '';
-                    }
-
                     return `${field.name}: this._${field.name}`;
                   })
                   .join(',\n')}
@@ -151,16 +143,10 @@ export default class Transformer {
   }
 
   async transform() {
-    // await removeDir(path.join(Transformer.outputPath, 'domain/models'), true);
-
-    await Promise.all(
-      this._models.map((model) =>
-        writeFileSafely(
-          path.join(
-            Transformer.outputPath,
-            `domain/models/${model.name}Model.ts`,
-          ),
-          `
+    for (const model of this._models) {
+      writeFileSafely(
+        `./prisma/__generated__/domain/models/${model.name}.model.ts`,
+        `
           ${this.generatePrismaModelImportStatement({ model })}
 
           ${this.generateModelDtoInterface({ model })}
@@ -174,13 +160,11 @@ export default class Transformer {
 
               ${this.generateToDtoMethod({ model })}
 
-              // getters
               ${this.generateModelGetterFields({ model })}
           }
         `,
-        ),
-      ),
-    );
+      );
+    }
   }
 
   private mapPrismaValueType(args: { field: PrismaDMMF.Field }) {
