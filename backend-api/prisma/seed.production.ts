@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import * as dotenv from "dotenv";
+import { PrismaClient } from '@prisma/client';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ prisma
   .$transaction((tx) =>
     Promise.all([
       // register your seeder here
-    ])
+    ]),
   )
   .catch((e) => {
     console.error(e);
