@@ -17,8 +17,9 @@ generator fabbrica {
     noTranspile = true
 }
 
-generator DomainModelGenerator {
-    provider = "tsx ./prisma/generators/domain-model/index.ts"
+generator frourio_framework_prisma_model_generator {
+    provider = "frourio-framework-prisma-model-generator"
+    output   = "./__generated__/models"
 }
 
 model User {
