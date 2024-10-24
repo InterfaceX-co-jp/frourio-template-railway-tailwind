@@ -34,17 +34,17 @@ jobs:
       # - name: Setup testing environment
       #   run: |
       #     docker-compose up -d
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: root-npm-cache
         with:
           path: "node_modules"
           key: client-npm-${{ hashFiles('package-lock.json') }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: client-npm-cache
         with:
           path: "frontend-web/node_modules"
           key: client-npm-${{ hashFiles('frontend-web/package-lock.json') }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: server-npm-cache
         with:
           path: "backend-api/node_modules"
