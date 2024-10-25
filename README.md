@@ -25,6 +25,48 @@ make install
 npm run dev
 ```
 
+## Use Supabase At Local Environment
+
+①
+
+```bash
+# move directory to frontend
+cd nftfun-monorepo/nftfun-monorepo-frontend
+```
+
+②
+
+```bash
+# initialize supabase cofiguration
+npx supabase init
+```
+
+③
+
+```bash
+# Let's staet Supabase
+npx supabase start
+```
+
+After a moment, local keys and configurations will be generated.
+
+④
+
+Create fields for "NEXT_PUBLIC_SUPABASE_URL" and "NEXT_PUBLIC_SUPABASE_ANON_KEY" in your .env.local file,
+and set their values to the "API URL" and "anon key", respectively.
+
+⑤
+
+Access the Studio URL for initial setup.
+
+    1)Navigate to the Storage section and create a new bucket.
+
+    2)Go to the Policies section under Storage and create your storage policies (make sure to pay attention to the bucket name, folder name, and allowed file extensions, as they are case-sensitive).
+
+⑥
+
+Finally, call the API to perform actual uploads and other operations.
+
 ## Enter ECS tasks in the Staging environment via SSM Session Manager
 
 ### What you need
