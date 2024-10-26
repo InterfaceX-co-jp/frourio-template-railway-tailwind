@@ -67,7 +67,7 @@
     "frourio": "^1.0.0",
     "frourio-framework-prisma-generators": "^1.0.7",
     "node-dev": "^8.0.0",
-    "npm-run-all2": "^5.0.0",
+    "npm-run-all2": "^7.0.0",
     "prettier": "^3.0.0",
     "prisma": "^5.20.0",
     "tsx": "^4.6.2",
