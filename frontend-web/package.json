@@ -58,7 +58,7 @@
     "eslint-config-next": "14.2.16",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-tailwindcss": "^3.14.2",
-    "npm-run-all2": "^5.0.0",
+    "npm-run-all2": "^7.0.0",
     "pathpida": "^0.22.0",
     "postcss": "^8.4.38",
     "supabase": "^1.167.4",
