@@ -82,3 +82,30 @@ Finally, call the API to perform actual uploads and other operations.
 $ cd frourio-template-railway-tailwind
 $ sh . /scripts/ecs_exec_stg -t ((task-id)) # Example) . /scripts/ecs_exec_stg -t 941f8694308b4adea44cb07ff9e50c30
 ```
+
+## Deployment config
+### AWS Amplify(frontend)
+```yml
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - cd ../
+            - npm install --prefix frontend-web
+            - npm install --prefix backend-api
+        build:
+          commands:
+            - cd frontend-web
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - .next/cache/**/*
+          - .npm/**/*
+    appRoot: frontend-web
+```
