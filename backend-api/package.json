@@ -4,6 +4,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "type": "module",
   "author": "mikana0918",
   "license": "ISC",
   "description": "backend API",
