@@ -108,7 +108,7 @@ const config = {
       },
     },
   },
-  plugins: [require('flowbite/plugin'), flowbite.plugin()],
+  plugins: [flowbite.plugin()],
 }
 
 export default config
