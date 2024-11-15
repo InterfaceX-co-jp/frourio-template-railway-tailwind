@@ -6,7 +6,7 @@
   },
   "author": "mikana0918",
   "license": "ISC",
-  "description": "NFTFUN backend API",
+  "description": "backend API",
   "scripts": {
     "predev": "npm run generate && npm run migrate:deploy",
     "dev": "run-p dev:*",

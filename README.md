@@ -31,7 +31,7 @@ npm run dev
 
 ```bash
 # move directory to frontend
-cd nftfun-monorepo/nftfun-monorepo-frontend
+cd frontend-web
 ```
 
 ②
@@ -84,7 +84,9 @@ $ sh . /scripts/ecs_exec_stg -t ((task-id)) # Example) . /scripts/ecs_exec_stg -
 ```
 
 ## Deployment config
+
 ### AWS Amplify(frontend)
+
 ```yml
 version: 1
 applications:
