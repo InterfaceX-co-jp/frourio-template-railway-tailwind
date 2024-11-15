@@ -18,6 +18,12 @@
     "incremental": true,
     "types": ["vitest/globals"]
   },
-  "include": ["**/*.ts", "**/*.js", ".eslintrc.js"],
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    ".eslintrc.js",
+    "vite.config.mts",
+    "aspida.config.mjs"
+  ],
   "exclude": ["node_modules"]
 }
