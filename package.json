@@ -25,7 +25,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "aspida": "^1.14.0",
     "eslint": "^8.46.0",
-    "eslint-config-next": "^14.0.0",
+    "eslint-config-next": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
     "npm-run-all2": "^7.0.0",
     "pathpida": "^0.22.0",
