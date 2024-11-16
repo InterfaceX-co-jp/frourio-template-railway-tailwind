@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import config from './config.common';
+import config from './config.common.mjs';
 // const { sentryEsbuildPlugin } = require('@sentry/esbuild-plugin');
 
 build({

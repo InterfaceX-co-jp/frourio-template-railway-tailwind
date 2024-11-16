@@ -11,7 +11,7 @@ COPY . .
 # Install dependencies
 RUN npm install
 RUN npm run generate
-RUN node ./scripts/build.prod.js
+RUN node ./scripts/build.prod.mjs
 
 # Expose the port on which the application will run
 EXPOSE ${API_SERVER_PORT} 

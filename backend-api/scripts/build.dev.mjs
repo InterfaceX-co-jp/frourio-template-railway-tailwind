@@ -1,5 +1,5 @@
 import { context } from 'esbuild';
-import config from './config.common';
+import config from './config.common.mjs';
 
 context({
   ...config,
