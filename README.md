@@ -1,5 +1,5 @@
 ## Ecosystem
-- [https://github.com/InterfaceX-co-jp/frourio-framework-prisma-generators](frourio-framework-prisma-generators)
+- [frourio-framework-prisma-generators](https://github.com/InterfaceX-co-jp/frourio-framework-prisma-generators)
   - prisma generator that keeps your DX and speed 🚀
 
 ## Root Commands
