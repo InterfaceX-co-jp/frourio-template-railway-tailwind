@@ -10,6 +10,11 @@ export default {
   outdir: path.resolve(dirname, '../'),
   platform: 'node',
   target: 'node20',
+  format: 'esm',
+  banner: {
+    // commonjs用ライブラリをESMプロジェクトでbundleする際に生じることのある問題への対策
+    js: 'import { createRequire } from "module"; import url from "url"; const require = createRequire(import.meta.url); const __filename = url.fileURLToPath(import.meta.url); const __dirname = url.fileURLToPath(new URL(".", import.meta.url));',
+  },
   bundle: true,
   plugins: [nodeExternalsPlugin()],
   logLevel: 'info',
