@@ -9,7 +9,7 @@ export default {
   entryPoints: [path.resolve(dirname, '../entrypoints/index.ts')],
   outdir: path.resolve(dirname, '../'),
   platform: 'node',
-  target: 'node20',
+  target: 'node22',
   format: 'esm',
   banner: {
     // commonjs用ライブラリをESMプロジェクトでbundleする際に生じることのある問題への対策
