@@ -31,7 +31,8 @@
     "seed:dev": "tsx prisma/seed.dev.ts",
     "seed:production": "tsx prisma/seed.production.ts",
     "test": "vitest run --pool=forks",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "npx eslint ."
   },
   "prisma": {
     "seed": "tsx prisma/seed.production.ts"

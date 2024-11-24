@@ -16,7 +16,10 @@
     "test:server": "npm run test --prefix backend-api",
     "typecheck": "run-p typecheck:*",
     "typecheck:client": "npm run typecheck --prefix frontend-web",
-    "typecheck:server": "npm run typecheck --prefix backend-api"
+    "typecheck:server": "npm run typecheck --prefix backend-api",
+    "lint": "run-p lint:*",
+    "lint:client": "npm run lint --prefix frontend-web",
+    "lint:server": "npm run lint --prefix backend-api"
   },
   "author": "",
   "license": "ISC",
