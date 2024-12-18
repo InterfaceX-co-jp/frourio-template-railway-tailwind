@@ -31,9 +31,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 18
-      # - name: Setup testing environment
-      #   run: |
-      #     docker-compose up -d
       - uses: actions/cache@v4
         id: root-npm-cache
         with:
@@ -56,19 +53,9 @@ jobs:
       - run: npm install --prefix backend-api
         if: steps.server-npm-cache.outputs.cache-hit != 'true'
       - name: Execute frontend lint
-        uses: reviewdog/action-eslint@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter.
-          workdir: .
-          eslint_flags: "frontend-web/"
+        run: npm run lint --prefix frontend-web
       - name: Execute backend lint
-        uses: reviewdog/action-eslint@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter.
-          workdir: .
-          eslint_flags: "backend-api/"
+        run: npm run lint --prefix backend-api
       - name: Setup DB
         run: |
           sudo systemctl start postgresql.service
