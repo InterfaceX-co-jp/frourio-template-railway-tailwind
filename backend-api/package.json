@@ -68,7 +68,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "frourio": "^1.2.1",
-    "frourio-framework-prisma-generators": "^1.2.0",
+    "frourio-framework-prisma-generators": "^2.1.2",
     "node-dev": "^8.0.0",
     "npm-run-all2": "^7.0.1",
     "prettier": "^3.3.3",
